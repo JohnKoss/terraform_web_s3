@@ -1,0 +1,1 @@
+This module will build using NPM and then upload to S3
