@@ -25,19 +25,18 @@ variable "bucket_name" {
 locals {
   sha1 = sha1(join("", [for f in fileset("${path.root}/${var.src_path}", "**") : filesha1("${path.root}/${var.src_path}/${f}")]))
   sha2 = sha1(join("", [for f in fileset("${path.root}/${var.dist_path}", "**") : filesha1("${path.root}/${var.dist_path}/${f}")]))
-  ttt = "${path.root}/${var.dist_path}"
 }
 
 resource "terraform_data" "website" {
   # Defines when the provisioner should be executed
-  triggers_replace = [local.sha1, local.sha2,local.ttt]
+  triggers_replace = [local.sha1, local.sha2]
 
   provisioner "local-exec" {
       command = "npm run build"
       working_dir = path.root
   }
 
-  input = "${local.sha1}${local.sha2}${local.ttt}"
+  input = "${local.sha1}${local.sha2}}"
 }
 
 // Upload the HTML, img and javascript files.
