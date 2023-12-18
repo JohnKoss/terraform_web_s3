@@ -9,12 +9,12 @@ variable "name" {
 variable "src_path" {
   type        = string
   description = "The location of the files to compile"
-  default = "src"
+  default     = "src"
 }
 variable "dist_path" {
   type        = string
   description = "The location of the compiled files"
-  default = "dist"
+  default     = "dist"
 }
 variable "bucket_name" {
   type        = string
@@ -32,8 +32,8 @@ resource "terraform_data" "website" {
   triggers_replace = [local.sha1, local.sha2]
 
   provisioner "local-exec" {
-      command = "npm run build"
-      working_dir = path.root
+    command     = "npm run build"
+    working_dir = path.root
   }
 
   input = "${local.sha1}${local.sha2}}"
@@ -77,7 +77,7 @@ resource "aws_s3_object" "hcl" {
   for_each = fileset("${path.root}/hcl", "**")
 
   bucket = var.bucket_name
-  key    = "labs/${var.name}/hcl/${each.value}"
+  key    = "${var.name}/hcl/${each.value}"
   source = "${path.root}/hcl/${each.value}"
 }
 
@@ -85,7 +85,7 @@ resource "aws_s3_object" "scoring" {
   for_each = fileset("${path.root}/scoring", "**")
 
   bucket = var.bucket_name
-  key    = "labs/${var.name}/scoring/${each.value}"
+  key    = "${var.name}/scoring/${each.value}"
   source = "${path.root}/scoring/${each.value}"
 }
 
@@ -93,6 +93,6 @@ resource "aws_s3_object" "objects" {
   for_each = fileset("${path.root}/objects", "**")
 
   bucket = var.bucket_name
-  key    = "labs/${var.name}/objects/${each.value}"
+  key    = "${var.name}/objects/${each.value}"
   source = "${path.root}/objects/${each.value}"
 }
