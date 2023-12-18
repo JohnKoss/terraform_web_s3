@@ -70,3 +70,29 @@ locals {
     "txt"  = "text/plain"
   }
 }
+
+##########
+
+resource "aws_s3_object" "hcl" {
+  for_each = fileset("${path.root}/hcl", "**")
+
+  bucket = var.bucket_name
+  key    = "labs/${var.name}/hcl/${each.value}"
+  source = "${path.root}/hcl/${each.value}"
+}
+
+resource "aws_s3_object" "scoring" {
+  for_each = fileset("${path.root}/scoring", "**")
+
+  bucket = var.bucket_name
+  key    = "labs/${var.name}/scoring/${each.value}"
+  source = "${path.root}/scoring/${each.value}"
+}
+
+resource "aws_s3_object" "objects" {
+  for_each = fileset("${path.root}/objects", "**")
+
+  bucket = var.bucket_name
+  key    = "labs/${var.name}/objects/${each.value}"
+  source = "${path.root}/objects/${each.value}"
+}
