@@ -36,23 +36,24 @@ variable "bucket_name" {
 /////////////
 locals {
   sha1 = sha1(join("", [for f in fileset("${path.module}/${var.src_path}", "**") : filesha1("${path.module}/${var.src_path}/${f}")]))
+  sha2 = sha1(join("", [for f in fileset("${path.module}/${var.dist_path}", "**") : filesha1("${path.module}/${var.dist_path}/${f}")]))
 }
 
 resource "terraform_data" "website" {
   # Defines when the provisioner should be executed
-  triggers_replace = [local.sha1]
+  triggers_replace = [local.sha1, local.sha2]
 
   provisioner "local-exec" {
       command = "npm run build"
       working_dir = path.module
   }
 
-  input = "${local.sha1}"
+  input = "${local.sha1}${local.sha2}"
 }
 
 // Upload the HTML, img and javascript files.
 resource "aws_s3_object" "website" {
-  for_each = fileset("${path.module}/dist", "**")
+  for_each = fileset("${path.module}/${var.dist_path}", "**")
 
   bucket = var.bucket_name
   key    = "${var.name}/${each.value}"
