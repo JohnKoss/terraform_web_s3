@@ -2,15 +2,15 @@
 /////////// The HTML pages stored in S3 /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-variable "folder_name" {
+variable "name" {
   type        = string
   description = "The name of the folder"
 }
-variable "path" {
-  type        = string
-  description = "The path of the folder"
-  default = "labs"
-}
+# variable "path" {
+#   type        = string
+#   description = "The path of the folder"
+#   default = "labs"
+# }
 variable "src_path" {
   type        = string
   description = "The location of the files to compile"
@@ -55,7 +55,7 @@ resource "aws_s3_object" "website" {
   for_each = fileset("${path.module}/dist", "**")
 
   bucket = var.bucket_name
-  key    = "${var.folder_name}/${each.value}"
+  key    = "${var.name}/${each.value}"
   source = "${path.module}/${var.dist_path}/${each.value}"
 
   content_type = lookup(tomap(local.mime_types), element(split(".", each.key), length(split(".", each.key)) - 1))
