@@ -44,7 +44,7 @@ resource "aws_s3_object" "website" {
   for_each = fileset("${path.root}/${var.dist_path}", "**")
 
   bucket = var.bucket_name
-  key    = "${var.name}/${each.value}"
+  key    = "${var.name}/html/${each.value}"
   source = "${path.root}/${var.dist_path}/${each.value}"
 
   content_type = lookup(tomap(local.mime_types), element(split(".", each.key), length(split(".", each.key)) - 1))
